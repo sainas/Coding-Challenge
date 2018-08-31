@@ -1,37 +1,6 @@
 ## Libraries Required
 * sys
-* numpy
-
-## Repo directory structure
-├── README.md
-├── run.sh
-├── src
-│   └── prediction-validation.py
-├── input
-│   ├── actual.txt
-│   ├── predicted.txt
-│   └── window.txt
-├── output
-│   └── comparison.txt
-└── insight_testsuite
-    ├── run_tests.sh
-    └── tests
-        ├── test_1
-        │   ├── input
-        │   │   ├── actual.txt
-        │   │   ├── predicted.txt
-        │   │   └── window.txt
-        │   └── output
-        │       └── comparison.txt
-        │
-        └── my_dirty_data_test
-            ├── input
-            │   ├── actual.txt
-            │   ├── predicted.txt
-            │   └── window.txt
-            └── output
-                └── comparison.txt
-				
+* numpy			
 
 ## Testing
 A dirty data is provide in the `my_dirty_data_test` folder to prove that my code can work well on the following condition:

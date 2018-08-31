@@ -1,21 +1,49 @@
+# Introduction
+# First, open actual.txt and predicted.txt.
+# Then, for datas of each hour, we do the following things:
+# Start from the actual price.
+# Read all the data in one hour and store the stock ids and prices in 'input_dict'
+# Then check if the predicted stock ids are in the dictionary.
+# If so we calculate the error and update the 'timewindow' array
+# Calculate a window_average error and store in 'output_list'
+# Go to the data of next hour.
+
+# After reading all the lines in both files, write 'output_list' into 'comparison.txt'
+
+# Structure of timewindow
+# The number of rows is decided by given window size
+# timewindow[:,0] is current time
+# timewindow[:,1] is the sum of error per hour
+# timewindow[:,2] is the number of error added
+
+
+
+# Created by Saina
+
 import numpy as np
 import sys
 import time
 
 def Is_str_digit(A):
+    """
+    function that checks if the string is a digit or not
+    """
     if A is "":
         return False
     else:
         B = A.replace('.', '', 1)
-        if B[0] == "-":
+        if B[0] == "-":                # in case the string is a minus digit
             B = B.replace('-', '', 1)
         return B.isdigit()
 
 def splitData(line):
+    """
+    function that splits a long string by "|", and then changes the data type.
+    """
     line = line.strip('\n')
     time, name, value = line.split("|")
     time = int(time)
-    if Is_str_digit(value) is True:
+    if Is_str_digit(value) is True:       # skip bad data
         value = float(value)
     else:
         value = None
@@ -24,6 +52,9 @@ def splitData(line):
     return time, name, value
 
 def output_per_window(current_time, timewindow):
+    """
+    function that calculates the average error and return one line output string
+    """
     if np.sum(timewindow[:, 2]) == 0:
         ave_error = 'na'
     else:
@@ -41,11 +72,12 @@ def main():
     PRE_PATH = sys.argv[3]
     OUTPUT_PATH = sys.argv[4]
 
-
+    # get the size of window
     filewindow = open(WINDOW_PATH)
     windowSize = int(filewindow.read())
     filewindow.close()
 
+    # initialization
     start_time = None
     current_time = None
     input_dict = {}
@@ -59,7 +91,7 @@ def main():
             for line_in in filein:
                 input_time, input_name, input_value = splitData(line_in)
 
-                if start_time == None:
+                if start_time is None:            # in case the time isn't start from 1
                     start_time = input_time
                     current_time = start_time
 
@@ -74,7 +106,7 @@ def main():
                             sum_error = sum_error + abs(input_dict.get(prd_name) - prd_value)
                             num_of_prd += 1
                         line_prd = fileprd.readline()
-                        if not line_prd:
+                        if not line_prd:              # in case the 'predicted.txt' ends
                             break
                         prd_time, prd_name, prd_value = splitData(line_prd)
                     timewindow[current_time % windowSize] = current_time, sum_error, num_of_prd
@@ -85,15 +117,15 @@ def main():
                     if current_time >= start_time + windowSize:
                         output_list.append(output_per_window(current_time, timewindow))
 
-        if filein.closed:
-            sum_error = 0
+        if filein.closed:    # After the final hour the 'actual.txt' will close. But
+            sum_error = 0    # the predicted data of final hour hasn't be processed
             num_of_prd = 0
             while (prd_time == current_time):
                 if (input_dict.get(prd_name, None) is not None and prd_value is not None):
                     sum_error = sum_error + abs(input_dict.get(prd_name) - prd_value)
                     num_of_prd += 1
                 line_prd = fileprd.readline()
-                if not line_prd:
+                if not line_prd:         # in case the 'predicted.txt' ends
                     break
                 prd_time, prd_name, prd_value = splitData(line_prd)
                 
